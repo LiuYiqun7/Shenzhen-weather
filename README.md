@@ -1,34 +1,18 @@
-# The phenomenon
-
-<!-- This is the SD5913 assignment 2 template. Everything in this file is yours to
-replace, and the check counts words: comments like this one are not words, so
-delete each one as you write. Start with the heading: name the phenomenon.
-
-Then, in this order, at least 150 words in total.
-
-New to folders, paths, or the files here whose names start with a dot? Read
-https://github.com/sd5913/pfad/blob/2026/reference/files.md first. Ten minutes. -->
-
-![what the picture is](out/plot.png)
+# Shenzhen Weather Visualization
 
 ## The phenomenon
-
-<!-- What goes up and down, and why you looked at it. -->
+This project visualizes the hourly temperature and precipitation trends in Shenzhen, China. Weather fluctuations directly impact daily commuting and outdoor activity planning in high-density urban environments.
 
 ## The source
+The raw weather forecast data is obtained from the [Open-Meteo API](https://open-meteo.com/).
+The dataset contains hourly intervals over 7 days. Each row represents a specific timestamp with corresponding 2m air temperature measured in degrees Celsius (°C) and precipitation measured in millimeters (mm).
 
-<!-- A link to the page or endpoint the file came from, and one line on what is in
-the file: how many rows, what a row means, what the units are. -->
+## The picture
+![Shenzhen Weather Forecast](out/weather.png)
 
 ## What the picture shows
+The visualization displays the continuous temperature curve in red alongside precipitation volume bars in blue across time. To improve clarity on the horizontal axis, precise minutes and second-level timestamps are discarded, displaying only reduced date-time labels at 12-hour steps.
 
-<!-- Two or three sentences. Including what it hides: every transformation throws
-something away, and naming what yours threw away is the easiest way to sound like
-you know what you did. -->
-
-## Run it
-
-```
-uv run fetch.py
+## How to run it
+```bash
 uv run plot.py
-```
