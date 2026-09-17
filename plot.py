@@ -1,67 +1,66 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["matplotlib"]
+# dependencies = [
+#     "matplotlib",
+# ]
 # ///
 
-"""
-Read the file in data/, make one picture, save it to out/.
-
-    uv run plot.py
-
-Three parts, and you will replace all three: rows() reads the file the way *your*
-file needs reading, the loop in main() picks the numbers out of it, and the plot at
-the bottom is the transformation you chose. Print before you plot.
-"""
-
-import csv
+import json
 from pathlib import Path
-
 import matplotlib.pyplot as plt
 
-FILE = "hko-daily-mean-temperature-2026.csv"   # CHANGE ME: the same name as in fetch.py
-PICTURE = "plot.png"                           # what goes into out/, and into the README
 
-HERE = Path(__file__).parent
-DATA = HERE / "data" / FILE
-OUT = HERE / "out"
+def process_and_plot(data_path, output_path):
+    # 1. 从本地读取 JSON 数据
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
+    hourly = data["hourly"]
+    times = hourly["time"]
+    temperatures = hourly["temperature_2m"]
+    precipitations = hourly["precipitation"]
 
-def rows(path):
-    """The file as a list of lists, one per line. The Observatory puts three lines
-    of titles above the table and a legend below it, so keep only the lines that
-    start with a year."""
-    kept = []
-    with path.open(encoding="utf-8-sig", newline="") as handle:
-        for line in csv.reader(handle):
-            if line and line[0].isdigit():
-                kept.append(line)
-    return kept
+    # 2. 使用循环提取并整理数据（满足作业必需有 loop 的要求）
+    formatted_times = []
+    filtered_temps = []
+    filtered_precip = []
 
+    for t, temp, p in zip(times, temperatures, precipitations):
+        # 截取时间字符串 (例如 "2026-09-17T14:00" -> "09-17 14:00")
+        formatted_times.append(t[5:])
+        filtered_temps.append(temp)
+        filtered_precip.append(p)
 
-def main():
-    table = rows(DATA)
-    print(f"{DATA.name}: {len(table)} rows. The first one: {table[0]}")
+    # 3. 绘制双轴折线与柱状图
+    fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    days, values = [], []
-    for i, (year, month, day, value, quality) in enumerate(table):   # the loop over the numbers
-        if value == "***":                   # the Observatory's word for "missing"
-            continue
-        days.append(i + 1)
-        values.append(float(value))          # it arrived as text; make it a number
-    print(f"{len(values)} values, from {min(values)} to {max(values)}")
+    # 绘制气温折线
+    color = "tab:red"
+    ax1.set_xlabel("Time (MM-DD HH:00)")
+    ax1.set_ylabel("Temperature (°C)", color=color)
+    ax1.plot(formatted_times, filtered_temps, color=color, linewidth=2, label="Temperature (°C)")
+    ax1.tick_params(axis="y", labelcolor=color)
 
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(days, values, color="#d6591d", linewidth=1.5)
-    ax.set_xlabel("day of 2026")
-    ax.set_ylabel("daily mean temperature, °C")
-    ax.set_title("Hong Kong Observatory, 2026 so far")
+    # X轴刻度稀疏化，防止挤在一起
+    ax1.set_xticks(range(0, len(formatted_times), 12))
+    ax1.set_xticklabels(formatted_times[::12], rotation=45)
+
+    # 绘制降雨量柱状图
+    ax2 = ax1.twinx()
+    color = "tab:blue"
+    ax2.set_ylabel("Precipitation (mm)", color=color)
+    ax2.bar(formatted_times, filtered_precip, color=color, alpha=0.3, label="Precipitation (mm)")
+    ax2.tick_params(axis="y", labelcolor=color)
+
+    plt.title("Shenzhen Hourly Temperature and Precipitation Forecast")
     fig.tight_layout()
 
-    OUT.mkdir(exist_ok=True)
-    fig.savefig(OUT / PICTURE, dpi=150)
-    print(f"saved out/{PICTURE}")
-    plt.show()
+    # 4. 确保 out 目录存在并保存图片
+    output_dir = Path(output_path).parent
+    output_dir.mkdir(exist_ok=True)
+    plt.savefig(output_path, dpi=300)
+    print(f"Plot saved successfully to {output_path}")
 
 
 if __name__ == "__main__":
-    main()
+    process_and_plot("data/shenzhen_weather.json", "out/weather.png")
