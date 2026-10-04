@@ -1,7 +1,7 @@
 # Shenzhen Weather Visualization
 
 ## The phenomenon
-This project visualizes the hourly temperature and precipitation trends in Shenzhen, China. Weather fluctuations directly impact daily commuting and outdoor activity planning in high-density urban environments.
+This project visualizes the hourly temperature and precipitation trends in Shenzhen, China. Shenzhen is a fast-paced coastal metropolis located in southern China, heavily influenced by a subtropical monsoon climate. Weather fluctuations directly impact daily commuting and outdoor activity planning in high-density urban environments. Tracking local weather patterns helps residents prepare effectively for changing weather conditions.
 
 ## The source
 The raw weather forecast data is obtained from the [Open-Meteo API](https://open-meteo.com/).
